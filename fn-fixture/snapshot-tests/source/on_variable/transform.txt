@@ -1,0 +1,21 @@
+Ok(
+    Ok(
+        (
+            true,
+            Ok(
+                (
+                    [
+                        "compile_error ! { \"Expected attribute must be on a function, received: const DO_THING : &\'static str = \\\"Nope?\\\" ;\\n\\n: Err(Error(\\\"expected `fn`\\\"))\" }",
+                    ],
+                    Summary {
+                        has_operational_errors: false,
+                        has_parsing_errors: false,
+                        has_formatting_errors: false,
+                        has_diff: false,
+                    },
+                    "",
+                ),
+            ),
+        ),
+    ),
+)

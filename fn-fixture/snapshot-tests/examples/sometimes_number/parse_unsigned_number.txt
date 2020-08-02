@@ -1,0 +1,7 @@
+Ok(
+    Err(
+        ParseIntError {
+            kind: InvalidDigit,
+        },
+    ),
+)

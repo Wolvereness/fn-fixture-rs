@@ -1,0 +1,8 @@
+Err(
+    Ok(
+        (
+            "<String> Panic",
+            "called `Result::unwrap()` on an `Err` value: Os { code: 22, kind: Other, message: \"The device does not recognize the command.\" }",
+        ),
+    ),
+)

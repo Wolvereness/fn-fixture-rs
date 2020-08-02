@@ -1,0 +1,8 @@
+Err(
+    Ok(
+        (
+            "<String> Panic",
+            "It\'s a PANIC!!",
+        ),
+    ),
+)

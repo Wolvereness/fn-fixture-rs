@@ -1,0 +1,21 @@
+[package]
+name = "fn-fixture"
+version = "1.0.0"
+edition = "2018"
+license = "MIT"
+authors = ["Velocity, A Managed Services Company", "Wesley Wolfe"]
+keywords = ["testing", "snapshot", "fixture"]
+categories = ["development-tools::testing"]
+description = "Procedural macro designed to quickly generate snapshots of a fixture"
+readme = "README.md"
+include = ["src/lib.rs", "Cargo.toml"]
+
+[lib]
+proc-macro = true
+
+[dependencies.fn-fixture-lib]
+path = "../fn-fixture-lib"
+version = "=1.0.0"
+
+[dev-dependencies]
+rustfmt = "0.10.0"

@@ -1,0 +1,14 @@
+[package]
+name = "fn-fixture-lib"
+version = "1.0.0"
+edition = "2018"
+license = "MIT"
+authors = ["Velocity, A Managed Services Company", "Wesley Wolfe"]
+description = "Internal library for fn-fixture"
+readme = "README.md"
+
+[dependencies]
+syn = { version = "1.0.1", features = [ "full" ] }
+quote = "1.0.0"
+proc-macro2 = "1.0.0"
+smallvec = "1.0.0"
