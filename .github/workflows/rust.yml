@@ -11,8 +11,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
-
+        include:
+          - os: windows-latest
+            test_skips: ""
+          - os: ubuntu-latest
+            test_skips: "-- --skip expected::panics::TestPanic_IO"
+          - os: macos-latest
+            test_skips: "-- --skip expected::panics::TestPanic_IO"
     steps:
     - uses: actions/cache@v2
       with:
@@ -24,4 +29,4 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - uses: actions/checkout@v2
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --verbose ${{ matrix.test_skips }}
