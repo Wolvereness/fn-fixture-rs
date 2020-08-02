@@ -1,6 +1,6 @@
 # fn-fixture-lib
 
-This is the actual code behind `fn-fixture`. It's separated to allow
+This is the actual code behind [`fn-fixture`](../fn-fixture). It's separated to allow
 testing and examination of the output.
 
 [![Crates.io version](https://img.shields.io/crates/v/fn-fixture-lib.svg)](https://crates.io/crates/fn-fixture-lib)
