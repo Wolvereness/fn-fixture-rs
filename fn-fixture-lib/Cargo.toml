@@ -1,6 +1,6 @@
 [package]
 name = "fn-fixture-lib"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2018"
 license = "MIT"
 homepage = "https://github.com/Wolvereness/fn-fixture-rs/tree/main/fn-fixture-lib"
@@ -8,6 +8,7 @@ documentation = "https://docs.rs/fn-fixture-lib"
 repository = "https://github.com/Wolvereness/fn-fixture-rs/"
 authors = ["Velocity, A Managed Services Company", "Wesley Wolfe"]
 description = "Internal library for fn-fixture"
+include = ["src/*", "Cargo.toml"]
 readme = "README.md"
 
 [dependencies]

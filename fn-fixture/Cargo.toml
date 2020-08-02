@@ -1,6 +1,6 @@
 [package]
 name = "fn-fixture"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2018"
 license = "MIT"
 homepage = "https://github.com/Wolvereness/fn-fixture-rs/tree/main/fn-fixture"
@@ -18,7 +18,7 @@ proc-macro = true
 
 [dependencies.fn-fixture-lib]
 path = "../fn-fixture-lib"
-version = "=1.0.0"
+version = "=1.0.1"
 
 [dev-dependencies]
 rustfmt = "0.10.0"

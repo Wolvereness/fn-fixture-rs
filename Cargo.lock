@@ -79,7 +79,7 @@ dependencies = [
 
 [[package]]
 name = "fn-fixture"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "fn-fixture-lib",
  "rustfmt",
@@ -87,7 +87,7 @@ dependencies = [
 
 [[package]]
 name = "fn-fixture-lib"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "proc-macro2",
  "quote",
