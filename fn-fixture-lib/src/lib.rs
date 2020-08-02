@@ -4,6 +4,7 @@
 //! [`fn-fixture`]: https://docs.rs/fn-fixture/
 
 use std::{
+    cmp::Ordering,
     env::var,
     fs::DirEntry,
     path::PathBuf,
@@ -94,9 +95,11 @@ pub fn make_snapshots(path_attr: &TokenStream, item: &TokenStream) -> Result<Tok
     let supers: TokenStream = "super::".parse().compile_err("Failed to init supers")?;
 
     let outputs = nested_fixtures(
-        path
+        sort_dir(path
             .read_dir()
             .compile_error(fmt!("Failed to read {:?}", path))?
+        )
+            .into_iter()
             .map(|result|
                 result.compile_error(fmt!("Failed to read in {:?}", path))
             ),
@@ -242,10 +245,11 @@ fn nested_fixtures(
             let mut input_txt = None;
             let mut input_bin = None;
             let mut folders: Option<Vec<_>> = None;
-            for file in fixture_path
+
+            for file in sort_dir(fixture_path
                 .read_dir()
                 .compile_error(fmt!("Failed to read fixture directory {:?}", fixture_path))?
-            {
+            ) {
                 macro_rules! push_err {($ex:expr) => {{
                     match $ex {
                         Err(e) => {
@@ -364,4 +368,20 @@ fn nested_fixtures(
         }))
         .map(EitherResult::either)
         .collect()
+}
+
+fn sort_dir<T>(iter: impl IntoIterator<Item=Result<DirEntry, T>>) -> impl IntoIterator<Item=Result<DirEntry, T>> {
+    let mut vec: Vec<_> = iter.into_iter().collect();
+    vec.sort_by(|left, right| match (left, right) {
+        (Ok(left), Ok(right)) => match (left.file_name().to_str(), right.file_name().to_str()) {
+            (Some(left), Some(right)) => left.cmp(right),
+            (None, None) => Ordering::Equal,
+            (Some(_), None) => Ordering::Greater,
+            (None, Some(_)) => Ordering::Less,
+        },
+        (Err(_), Err(_)) => Ordering::Equal,
+        (Ok(_), Err(_)) => Ordering::Greater,
+        (Err(_), Ok(_)) => Ordering::Less,
+    });
+    vec
 }
