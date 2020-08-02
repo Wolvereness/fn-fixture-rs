@@ -24,6 +24,7 @@ when an expected result is not present.
 [![Crates.io version](https://img.shields.io/crates/v/fn-fixture.svg)](https://crates.io/crates/fn-fixture)
 [![docs.rs status](https://docs.rs/fn-fixture/badge.svg)](https://docs.rs/fn-fixture)
 [![Crates.io license](https://img.shields.io/crates/l/fn-fixture.svg)](https://crates.io/crates/fn-fixture)
+![Github Tests](https://github.com/Wolvereness/fn-fixture-rs/workflows/Rust/badge.svg)
 
 ## Usage
 
