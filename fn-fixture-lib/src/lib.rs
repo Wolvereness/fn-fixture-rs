@@ -16,11 +16,11 @@ use proc_macro2::{
     Literal,
     Span,
     TokenStream,
+    TokenTree,
 };
 use smallvec::SmallVec;
 use syn::{
     export::ToTokens,
-    ExprLit,
     FnArg,
     ItemFn,
     Lit,
@@ -74,21 +74,36 @@ pub fn make_snapshots(path_attr: &TokenStream, item: &TokenStream) -> Result<Tok
 
     let base_name = name.to_token_stream();
 
-    let path = {
+    let (plaintext, path) = {
         let mut path = PathBuf::new();
         path.push(var("CARGO_MANIFEST_DIR").compile_err("No manifest directory env")?);
-        path.push(
-            if let Lit::Str(string) =
-            parse2::<ExprLit>(path_attr.clone())
-                .compile_error(fmt!("Expected literal path in attribute, received: {}\n\n", path_attr))?
-                .lit
-            {
-                string.value()
-            } else {
-                return ().compile_error(fmt!("Expected literal path: {}", path_attr))
-            }
-        );
-        path
+        let mut path_attr_tokens = path_attr.clone().into_iter();
+
+        let (path_literal, plaintext) = match (path_attr_tokens.next(), path_attr_tokens.next(), path_attr_tokens.next()) {
+            (None, _, _) =>
+                return ().compile_err("No path provided in attribute"),
+            (Some(TokenTree::Literal(path_attr)), None, _) =>
+                (path_attr, false),
+            (Some(value), None, _) =>
+                return ().compile_error(fmt!("{} must be a path literal", value)),
+            (Some(TokenTree::Ident(ident)), Some(TokenTree::Literal(path_attr)), None) =>
+                (
+                    path_attr,
+                    if "plaintext" == ident.to_string() {
+                        true
+                    } else {
+                        return ().compile_error(fmt!("May only specify plaintext, found {}", ident));
+                    }
+                ),
+            (Some(_), Some(_), _) => return ().compile_err("Must provide only a path literal and optionally specify plaintext before"),
+        };
+        match Lit::new(path_literal) {
+            Lit::Str(path_literal) =>
+                path.push(&path_literal.value()),
+            path_literal =>
+                return ().compile_error(fmt!("Expected literal path in attribute, received: {:?}", path_literal.into_token_stream())),
+        }
+        (plaintext, path)
     };
 
     let tag: TokenStream = "#[test]".parse().compile_err("Failed to init tag")?;
@@ -113,19 +128,27 @@ pub fn make_snapshots(path_attr: &TokenStream, item: &TokenStream) -> Result<Tok
         }
     );
 
-    // <String> panics come from the formatted panic!, including .unwrap/.expect
-    // <&str> panics come from unformatted panic!, like panic!("Nooo!")
-    Ok(quote! {
-        fn #name #generic_lt #generic_params #generic_gt (mut #param_name: (
-            impl std::ops::Fn(&mut std::option::Option<#param_type>) + std::panic::RefUnwindSafe + std::panic::UnwindSafe,
-            &'static str,
-            &'static str,
-         )) #generic_where {
-            #item
-
-            let (to_call, (provider, expected_file, actual_file)) =
-                (&#name, #param_name);
-
+    let test_code = if plaintext {
+        quote! {
+            let mut temp = std::option::Option::None;
+            provider(&mut temp);
+            let result = format!("{}", to_call(temp.unwrap()));
+            if std::path::Path::new(expected_file).is_file() {
+                let expected = std::fs::read_to_string(expected_file)
+                    .unwrap_or_else(|err|
+                        panic!("Reading expected from {}: {:?}", expected_file, err)
+                    );
+                assert_eq!(result, expected)
+            } else {
+                std::fs::write(actual_file, result.as_bytes())
+                    .unwrap_or_else(|err|
+                        panic!("Writing actual to {}: {:?}", actual_file, err)
+                    );
+                panic!("No expected value set: {}", actual_file)
+            }
+        }
+    } else {
+        quote! {
             let result = format!(
                 "{:#?}\n",
                 std::panic::catch_unwind(
@@ -159,6 +182,21 @@ pub fn make_snapshots(path_attr: &TokenStream, item: &TokenStream) -> Result<Tok
                     );
                 panic!("No expected value set: {}", actual_file)
             }
+        }
+    };
+
+    // <String> panics come from the formatted panic!, including .unwrap/.expect
+    // <&str> panics come from unformatted panic!, like panic!("Nooo!")
+    Ok(quote! {
+        fn #name #generic_lt #generic_params #generic_gt (mut #param_name: (
+            impl std::ops::Fn(&mut std::option::Option<#param_type>) + std::panic::RefUnwindSafe + std::panic::UnwindSafe,
+            &'static str,
+            &'static str,
+         )) #generic_where {
+            #item
+            let (to_call, (provider, expected_file, actual_file)) =
+                (&#name, #param_name);
+            #test_code
         }
 
         mod #name {

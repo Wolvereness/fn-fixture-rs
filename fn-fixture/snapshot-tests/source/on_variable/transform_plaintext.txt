@@ -1,0 +1,1 @@
+compile_error ! { "Expected attribute must be on a function, received: const DO_THING : &'static str = \"Nope?\" ;\n\n: Err(Error(\"expected `fn`\"))" }

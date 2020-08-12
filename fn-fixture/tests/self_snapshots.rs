@@ -26,8 +26,34 @@ fn parse_signed_number(value: &str) -> Result<isize, impl std::fmt::Debug> {
     value.parse()
 }
 
+#[fn_fixture::snapshot(plaintext "snapshot-tests/source")]
+fn transform_plaintext(
+    params: (&str, &str),
+) -> impl std::fmt::Display {
+    let (_, result) = transform_common(params).unwrap();
+    let (result, _, _) = result.unwrap();
+
+    struct Wrap(Vec<String>);
+    impl std::fmt::Display for Wrap {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            for string in self.0.iter() {
+                writeln!(f, "{}", string)?;
+            }
+            Ok(())
+        }
+    }
+
+    Wrap(result)
+}
+
 #[fn_fixture::snapshot("snapshot-tests/source")]
 fn transform(
+    params: (&str, &str),
+) -> impl std::fmt::Debug {
+    transform_common(params)
+}
+
+fn transform_common(
     params: (&str, &str),
 ) -> Result<
     (
