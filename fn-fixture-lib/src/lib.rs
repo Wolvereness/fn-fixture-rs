@@ -19,7 +19,6 @@ use proc_macro2::{
 };
 use smallvec::SmallVec;
 use syn::{
-    export::ToTokens,
     ExprLit,
     FnArg,
     ItemFn,
@@ -34,7 +33,10 @@ use syn::{
     Generics,
 };
 
-use quote::quote;
+use quote::{
+    quote,
+    ToTokens,
+};
 
 mod traits;
 

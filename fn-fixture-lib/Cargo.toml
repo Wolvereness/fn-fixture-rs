@@ -1,6 +1,6 @@
 [package]
 name = "fn-fixture-lib"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2018"
 license = "MIT"
 homepage = "https://github.com/Wolvereness/fn-fixture-rs/tree/main/fn-fixture-lib"
@@ -12,7 +12,7 @@ include = ["src/*", "Cargo.toml"]
 readme = "README.md"
 
 [dependencies]
-syn = { version = "1.0.1", features = [ "full" ] }
+syn = { version = "1.0.60", features = [ "full" ] }
 quote = "1.0.0"
 proc-macro2 = "1.0.0"
 smallvec = "1.0.0"
